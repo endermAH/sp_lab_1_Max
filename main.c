@@ -150,21 +150,21 @@ int main(int argc, char** argv) {
       exit(EXIT_FAILURE);
     }
   } else {
-    //TODO: stdout;
+    globalArgs.outputFile = stdout;
   }
 
   if (globalArgs.inputPath != NULL) {
     if ((globalArgs.inputFile = fopen(globalArgs.inputPath, "r")) == NULL) {
       fprintf(stderr, "Can not open input file!\n");
       exit(EXIT_FAILURE);
-    } else {
-      char* sentence;
-      int stringNumber = 1;
-      while (!feof(globalArgs.inputFile)) getSentence(&stringNumber);
     }
   } else {
-    //TODO: stdin
+    globalArgs.inputFile = stdin;
   }
+
+  char* sentence;
+  int stringNumber = 1;
+  while (!feof(globalArgs.inputFile)) getSentence(&stringNumber);
 
   return 0;
 }
