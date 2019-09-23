@@ -62,6 +62,7 @@ char* getSentence(int *stringNumber) {
     fprintf(globalArgs.outputFile, "\n");
   }
 
+  if (!feof(globalArgs.inputFile)) getSentence(stringNumber);
   return sentence;
 }
 
@@ -164,7 +165,9 @@ int main(int argc, char** argv) {
 
   char* sentence;
   int stringNumber = 1;
-  while (!feof(globalArgs.inputFile)) getSentence(&stringNumber);
+  getSentence(&stringNumber);
+  //if (feof(globalArgs.inputFile))
+  //  while (!feof(globalArgs.inputFile)) getSentence(&stringNumber);
 
   return 0;
 }
