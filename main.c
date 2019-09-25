@@ -4,9 +4,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <math.h>
 
-const char* boolValues[2] = {"false", "true"};
-const char* optString = "x:n:lh";
+const char *boolValues[2] = {"false", "true"};
+const char *optString = "x:n:lh";
+
+char *outputString = NULL;
+int endOfOutputString = 0;
 
 struct globalArgs_t {
   bool stringNumbers;
@@ -18,9 +22,15 @@ struct globalArgs_t {
   FILE* outputFile;
 } globalArgs;
 
+void addCharToOutput(char target_char) {
+  endOfOutputString++;
+  outputString = realloc(outputString, endOfOutputString * sizeof(char));
+  outputString[endOfOutputString-1] = target_char;
+}
+
 char* getSentence(int *stringNumber) {
-  char *sentence = NULL; //строка для обработки
-  char *tooutput = NULL; //строка для вывода
+  char *sentence = NULL; //Строка для обработки
+  char *tooutput = NULL; //Строка для вывода
   int i = 1, oi = 1;
   char letter;
 
@@ -57,9 +67,34 @@ char* getSentence(int *stringNumber) {
   if (oi == 1 || oi == 2) polinomeFlag = false;
 
   if (polinomeFlag) {
-    if (globalArgs.stringNumbers) fprintf(globalArgs.outputFile, "%d: ", *stringNumber);
-    for (int j = 0; j < oi-1; j++) fprintf(globalArgs.outputFile, "%c", tooutput[j]);
-    fprintf(globalArgs.outputFile, "\n");
+    //Если -l нужно добавлять в начале каждой строки номер строки в которой найден полином
+    if (globalArgs.stringNumbers) {
+      int number = *stringNumber;
+      int numberLength = 0;
+
+      //Определение длины числа
+      while (number / 10 != 0) {
+        numberLength++;
+        number /= 10;
+      }
+      numberLength++;
+      //printf("%d\n", numberLength);
+
+      //Запись числа в начало строки
+      for (int j = numberLength; j > 0; j--) {
+        if ((j == numberLength) && (*stringNumber / pow(10, j) < 1)) continue;
+        addCharToOutput(*stringNumber / pow(10, j) + '0');
+      }
+      addCharToOutput(*stringNumber % 10 + '0');
+      addCharToOutput(':');
+      addCharToOutput(' ');
+    }
+
+    //Переписываем полиндром во временный массив
+    for (int j = 0; j < oi-1; j++) {
+      addCharToOutput(tooutput[j]);
+    }
+    addCharToOutput('\n');
   }
 
   if (!feof(globalArgs.inputFile)) getSentence(stringNumber);
@@ -154,6 +189,8 @@ int main(int argc, char** argv) {
     globalArgs.outputFile = stdout;
   }
 
+  bool setToStdout = false;
+
   if (globalArgs.inputPath != NULL) {
     if ((globalArgs.inputFile = fopen(globalArgs.inputPath, "r")) == NULL) {
       fprintf(stderr, "Can not open input file!\n");
@@ -165,9 +202,12 @@ int main(int argc, char** argv) {
 
   char* sentence;
   int stringNumber = 1;
+
   getSentence(&stringNumber);
-  //if (feof(globalArgs.inputFile))
-  //  while (!feof(globalArgs.inputFile)) getSentence(&stringNumber);
+
+  for (int i = 0; i <= endOfOutputString; i++) {
+    fprintf(globalArgs.outputFile, "%c", outputString[i]);
+  }
 
   return 0;
 }
