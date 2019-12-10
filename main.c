@@ -40,7 +40,9 @@ void addCharToConvertVar(char target_char) {
 void printHexToDec() {
   int outputNumber = 0;
   for (int i = endOfConvVariable-1; i >= 2; i--) {
-    outputNumber += (convVariable[i] - '0')*(int)pow(16, endOfConvVariable-1-i);
+    int j = 0;
+    for (j = 0; j <= 15; j ++) { if (convVariable[i] == hexNumbers[j]) break;}
+    outputNumber += (j)*(int)pow(16, endOfConvVariable-1-i);
   }
   char *output;
   asprintf(&output, "%d", outputNumber);
