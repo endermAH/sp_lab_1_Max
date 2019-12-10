@@ -205,8 +205,10 @@ int main(int argc, char** argv) {
 
   getSentence(&stringNumber);
 
-  for (int i = 0; i <= endOfOutputString; i++) {
-    fprintf(globalArgs.outputFile, "%c", outputString[i]);
+  if (endOfOutputString != 0) {
+    for (int i = 0; i <= endOfOutputString; i++) {
+      fprintf(globalArgs.outputFile, "%c", outputString[i]);
+    }
   }
 
   return 0;
