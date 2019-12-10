@@ -64,18 +64,19 @@ void printDecToHex() {
   number = atoi(convVariable);
   while (number > 0) {
     output[len-1] = hexNumbers[number % 16];
-    printf("hex: %d\n", hexNumbers[number % 16]);
     number /= 16;
-    printf("number: %d\n", number);
     len--;
   }
-  printf("String: %s\n", output);
 
   addCharToOutput('0');
   addCharToOutput('x');
   for (int i = 0; i < strlen(output); i++) {
     addCharToOutput(output[i]);
   }
+}
+
+void justPrint() {
+  for (int i = 0; i < endOfConvVariable; i++) addCharToOutput(convVariable[i]);
 }
 
 void addConvToOutput() {
@@ -92,7 +93,6 @@ void addConvToOutput() {
     if (state == 2) {
       printf(" - hex: '%c'\n", convVariable[i]);
       if (!((convVariable[i] >= 48 && convVariable[i] <= 57)||(convVariable[i] >= 65 && convVariable[i] <= 70))){
-        //printf("%c\n bad symbol", convVariable[i]);
         state = 0;
         break;
       }
@@ -100,7 +100,6 @@ void addConvToOutput() {
     if (state == 1) {
       printf(" - num: '%c'\n", convVariable[i]);
       if (convVariable[i] < 48 || convVariable[i] > 57){
-        //printf("'%c' - bad symbol", convVariable[i]);
         state = 0;
         break;
       }
@@ -109,7 +108,7 @@ void addConvToOutput() {
 
   switch (state) {
     case 0:
-      addCharToOutput('n');
+      justPrint();
       break;
     case 1:
       printDecToHex();
@@ -118,6 +117,7 @@ void addConvToOutput() {
       printHexToDec();
       break;
     default:
+      justPrint();
       break;
   }
 
