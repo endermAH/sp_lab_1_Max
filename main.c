@@ -54,13 +54,11 @@ void printHexToDec() {
 
 void printDecToHex() {
   int number = atoi(convVariable);
-  printf("Number: %d\n", number);
   int len = 0;
   while (number > 0) {
     number /= 16;
     len++;
   }
-  printf("Len: %d\n", len);
   char output[len+1];
   output[len] = '\0';
   number = atoi(convVariable);
@@ -93,14 +91,12 @@ void addConvToOutput() {
 
   for (int i = 2; i < endOfConvVariable; i++) {
     if (state == 2) {
-      printf(" - hex: '%c'\n", convVariable[i]);
       if (!((convVariable[i] >= 48 && convVariable[i] <= 57)||(convVariable[i] >= 65 && convVariable[i] <= 70))){
         state = 0;
         break;
       }
     }
     if (state == 1) {
-      printf(" - num: '%c'\n", convVariable[i]);
       if (convVariable[i] < 48 || convVariable[i] > 57){
         state = 0;
         break;
