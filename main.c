@@ -9,9 +9,13 @@
 const char *optString = "h";
 
 char *outputString = NULL;
-char *envVariable = NULL;
+char *convVariable = NULL;
 int endOfOutputString = 0;
-int endOfENVVariable = 0;
+int endOfConvVariable = 0;
+
+char hexNumbers[16] = {
+  0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F'
+};
 
 struct globalArgs_t {
   char* inputPath;
@@ -26,51 +30,98 @@ void addCharToOutput(char target_char) {
   outputString[endOfOutputString-1] = target_char;
 }
 
-void addCharToENVVar(char target_char) {
-  endOfENVVariable++;
-  envVariable = realloc(envVariable, endOfENVVariable * sizeof(char));
-  envVariable[endOfENVVariable-1] = target_char;
-  envVariable[endOfENVVariable] = '\0';
+void addCharToConvertVar(char target_char) {
+  endOfConvVariable++;
+  convVariable = realloc(convVariable, endOfConvVariable * sizeof(char));
+  convVariable[endOfConvVariable-1] = target_char;
+  convVariable[endOfConvVariable] = '\0';
 }
 
-void addENVToOUTPUT() {
-  char *envpointer;
-  int envValLen;
-  int envNameLen;
-  if (getenv(envVariable)) {
-    envpointer = getenv(envVariable);
-    envValLen = strlen(envpointer);
-    for (int i = 0; i < envValLen; i++) {
-      addCharToOutput(envpointer[i]);
-    }
-    envVariable = NULL;
-    endOfENVVariable = 0;
-  } else {
-    addCharToOutput('$');
-    for (int i = 0; i < endOfENVVariable; i++) {
-      addCharToOutput(envVariable[i]);
-    }
-    envVariable = NULL;
-    endOfENVVariable = 0;
+void printHexToDec() {
+  int outputNumber = 0;
+  for (int i = endOfConvVariable-1; i >= 2; i--) {
+    outputNumber += (convVariable[i] - '0')*(int)pow(16, endOfConvVariable-1-i);
+    printf("Added %d * %d\n", (int)pow(16, endOfConvVariable-1-i), convVariable[i]);
   }
+  char *output;
+  printf("Number: %d\n", outputNumber);
+  asprintf(&output, "%d", outputNumber);
+  printf("String: %s\n", output);
+  for (int i = 0; i <= strlen(output); i++) {
+    addCharToOutput(output[i]);
+  }
+}
+
+void addConvToOutput() {
+  short int state = 1;
+
+  // state 1 - numbers
+  // state 2 - hex
+  // state 0 - nothing
+
+  if (convVariable[0] == '0' && convVariable[1] == 'x') state = 2;
+  if (!(convVariable[1] >= 48 && convVariable[1] <= 57) && state == 1) state = 0;
+
+  for (int i = 2; i < endOfConvVariable; i++) {
+    if (state == 2) {
+      printf(" - hex: '%c'\n", convVariable[i]);
+      if (!((convVariable[i] >= 48 && convVariable[i] <= 57)||(convVariable[i] >= 65 && convVariable[i] <= 70))){
+        //printf("%c\n bad symbol", convVariable[i]);
+        state = 0;
+        break;
+      }
+    }
+    if (state == 1) {
+      printf(" - num: '%c'\n", convVariable[i]);
+      if (convVariable[i] < 48 || convVariable[i] > 57){
+        //printf("'%c' - bad symbol", convVariable[i]);
+        state = 0;
+        break;
+      }
+    }
+  }
+
+  switch (state) {
+    case 0:
+      addCharToOutput('n');
+      break;
+    case 1:
+      addCharToOutput('d');
+      break;
+    case 2:
+      printHexToDec();
+      break;
+    default:
+      break;
+  }
+
+  convVariable = NULL;
+  endOfConvVariable = 0;
 }
 
 void startJob() {
   short int state = 0;
   char inChar;
 
+  // state 1 - stasrt reading numbers
+  // state 10 - first number is 0
+  // state 2 - reading 0x
+  // state 3 - reading 10
+  // state 4 - finish reading
+  // state 0 - casual reading
+
   while (!feof(globalArgs.inputFile)){
     fscanf(globalArgs.inputFile,"%c",&inChar);
-    if (inChar == '$' && state != 1) {
+    if ((inChar >= 48 && inChar <= 57) && state == 0 && ((endOfOutputString > 0 && (outputString[endOfOutputString-1] == ' ' || outputString[endOfOutputString-1] == '\n' || outputString[endOfOutputString-1] == '\0')) || endOfOutputString
+   == 0)) {
       state = 1;
-      continue;
     } else if ((inChar == ' ' || inChar == '\n' || inChar == '\0') && (state == 1)) {
       state = 2;
     }
     if (state == 1) {
-      addCharToENVVar(inChar);
+      addCharToConvertVar(inChar);
     } else if (state == 2) {
-      addENVToOUTPUT();
+      addConvToOutput();
       state = 0;
     }
     if (state == 0) {
