@@ -14,7 +14,7 @@ int endOfOutputString = 0;
 int endOfConvVariable = 0;
 
 char hexNumbers[16] = {
-  0,1,2,3,4,5,6,7,8,9,'A','B','C','D','E','F'
+  '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
 };
 
 struct globalArgs_t {
@@ -41,13 +41,39 @@ void printHexToDec() {
   int outputNumber = 0;
   for (int i = endOfConvVariable-1; i >= 2; i--) {
     outputNumber += (convVariable[i] - '0')*(int)pow(16, endOfConvVariable-1-i);
-    printf("Added %d * %d\n", (int)pow(16, endOfConvVariable-1-i), convVariable[i]);
   }
   char *output;
-  printf("Number: %d\n", outputNumber);
   asprintf(&output, "%d", outputNumber);
-  printf("String: %s\n", output);
+
   for (int i = 0; i <= strlen(output); i++) {
+    addCharToOutput(output[i]);
+  }
+}
+
+void printDecToHex() {
+  int number = atoi(convVariable);
+  printf("Number: %d\n", number);
+  int len = 0;
+  while (number > 0) {
+    number /= 16;
+    len++;
+  }
+  printf("Len: %d\n", len);
+  char output[len+1];
+  output[len] = '\0';
+  number = atoi(convVariable);
+  while (number > 0) {
+    output[len-1] = hexNumbers[number % 16];
+    printf("hex: %d\n", hexNumbers[number % 16]);
+    number /= 16;
+    printf("number: %d\n", number);
+    len--;
+  }
+  printf("String: %s\n", output);
+
+  addCharToOutput('0');
+  addCharToOutput('x');
+  for (int i = 0; i < strlen(output); i++) {
     addCharToOutput(output[i]);
   }
 }
@@ -86,7 +112,7 @@ void addConvToOutput() {
       addCharToOutput('n');
       break;
     case 1:
-      addCharToOutput('d');
+      printDecToHex();
       break;
     case 2:
       printHexToDec();
