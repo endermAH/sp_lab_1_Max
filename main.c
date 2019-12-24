@@ -24,12 +24,14 @@ struct globalArgs_t {
   FILE* outputFile;
 } globalArgs;
 
+//Add char to output pool
 void addCharToOutput(char target_char) {
   endOfOutputString++;
   outputString = realloc(outputString, endOfOutputString * sizeof(char));
   outputString[endOfOutputString-1] = target_char;
 }
 
+//Add char to converting pool
 void addCharToConvertVar(char target_char) {
   endOfConvVariable++;
   convVariable = realloc(convVariable, endOfConvVariable * sizeof(char));
@@ -37,6 +39,7 @@ void addCharToConvertVar(char target_char) {
   convVariable[endOfConvVariable] = '\0';
 }
 
+//Convert hex to dec and print
 void printHexToDec() {
   int outputNumber = 0;
   for (int i = endOfConvVariable-1; i >= 2; i--) {
@@ -52,6 +55,7 @@ void printHexToDec() {
   }
 }
 
+//Convert dec to hex and print
 void printDecToHex() {
   int number = atoi(convVariable);
   int len = 0;
@@ -75,10 +79,12 @@ void printDecToHex() {
   }
 }
 
+// Just print buffer :)
 void justPrint() {
   for (int i = 0; i < endOfConvVariable; i++) addCharToOutput(convVariable[i]);
 }
 
+// Detect number system and add it to output
 void addConvToOutput() {
   short int state = 1;
 
@@ -123,6 +129,7 @@ void addConvToOutput() {
   endOfConvVariable = 0;
 }
 
+// Detect somthing looks like numbers and add it to buffer
 void startJob() {
   short int state = 0;
   char inChar;
@@ -154,11 +161,13 @@ void startJob() {
   }
 }
 
+//Display usage
 void display_usage(char* name) {
   printf("\nUSAGE:\n%s [-h] \n\nARGS: \n-h: Help\n\n", name);
   exit(EXIT_SUCCESS);
 }
 
+// Get optionns, input and output file paths and validate it
 int getStartData(int argc, char** argv) {
   int opt = 0;
 
