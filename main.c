@@ -159,8 +159,8 @@ void startJob() {
       addCharToOutput(inChar);
     }
   }
-  addConvToOutput();
-  state = 0;
+  if (state == 1) addConvToOutput();
+  putc('\n', globalArgs.outputFile);
 }
 
 //Display usage
@@ -231,6 +231,7 @@ int main(int argc, char** argv) {
       fprintf(globalArgs.outputFile, "%c", outputString[i]);
     }
   }
+  putc('\n', globalArgs.outputFile);
 
   return 0;
 }
