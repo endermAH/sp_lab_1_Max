@@ -159,6 +159,8 @@ void startJob() {
       addCharToOutput(inChar);
     }
   }
+  addConvToOutput();
+  state = 0;
 }
 
 //Display usage
