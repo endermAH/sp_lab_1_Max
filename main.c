@@ -50,7 +50,7 @@ void printHexToDec() {
   char *output;
   asprintf(&output, "%d", outputNumber);
 
-  for (int i = 0; i <= strlen(output); i++) {
+  for (int i = 0; i < strlen(output); i++) {
     addCharToOutput(output[i]);
   }
 }
@@ -80,7 +80,7 @@ void printDecToHex() {
   addCharToOutput('x');
 
   //printf("%d\n", strlen(output));
-  for (int i = 0; i <= strlen(output); i++) {
+  for (int i = 0; i < strlen(output); i++) {
     //printf("i: %d, out: %c\n", i, output[i]);
     addCharToOutput(output[i]);
   }
