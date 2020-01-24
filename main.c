@@ -169,7 +169,7 @@ void startJob() {
     }
   }
   if (state == 1) addConvToOutput();
-  if (globalArgs.inputPath == NULL) putc('\n', globalArgs.outputFile);
+  //if (globalArgs.inputPath == NULL) putc('\n', globalArgs.outputFile);
 }
 
 //Display usage
@@ -234,6 +234,7 @@ int main(int argc, char** argv) {
   if (globalArgs.inputPath == NULL) {
     endOfOutputString -= 2;
   }
+
 
   if (endOfOutputString != 0) {
     for (int i = 0; i <= endOfOutputString; i++) {
